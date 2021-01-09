@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hadar.loseweightcantwait.DayAdapter;
+import com.hadar.loseweightcantwait.ui.main.adapters.DayAdapter;
 import com.hadar.loseweightcantwait.ui.addtraining.enums.DayEnum;
 import com.hadar.loseweightcantwait.ui.addtraining.enums.MuscleEnum;
 import com.hadar.loseweightcantwait.R;

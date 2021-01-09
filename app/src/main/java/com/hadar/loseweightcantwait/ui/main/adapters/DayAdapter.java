@@ -1,4 +1,4 @@
-package com.hadar.loseweightcantwait;
+package com.hadar.loseweightcantwait.ui.main.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.hadar.loseweightcantwait.R;
 import com.hadar.loseweightcantwait.ui.addtraining.enums.DayEnum;
 import com.hadar.loseweightcantwait.ui.addtraining.models.Day;
 

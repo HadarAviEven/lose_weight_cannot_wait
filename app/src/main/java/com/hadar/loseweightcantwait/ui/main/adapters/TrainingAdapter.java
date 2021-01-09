@@ -1,4 +1,4 @@
-package com.hadar.loseweightcantwait;
+package com.hadar.loseweightcantwait.ui.main.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.hadar.loseweightcantwait.R;
 import com.hadar.loseweightcantwait.data.db.TrainingDatabase;
 import com.hadar.loseweightcantwait.ui.addtraining.enums.EventType;
 import com.hadar.loseweightcantwait.ui.addtraining.models.Training;
@@ -19,8 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class TrainingAdapter extends EmptyRecyclerView.Adapter<TrainingViewHolder> {
+public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
     private ArrayList<Training> trainingsArrayList;
     private Context context;
     private TrainingDatabase mDb;
