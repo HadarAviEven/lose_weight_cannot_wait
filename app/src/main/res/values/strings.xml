@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Lose weight, Cannot wait!</string>
+    <string name="no_trainings">No Trainings Yet :)</string>
+    <string name="emoji">&#127947;</string>
+    <string name="training_name">trainingName</string>
+    <string name="result_training">resultTraining</string>
+    <string name="add_new_training">Add New Training</string>
+
+    <string name="save">Save</string>
+    <string name="select_days">Select days of training:</string>
+    <string name="enter_training_name">Enter training name:</string>
+    <string name="title_days">Days of Week:</string>
+    <string name="title_muscles">Working On:</string>
+    <string name="miss_name">Pick a name</string>
+    <string name="miss_days">Pick days</string>
+    <string name="miss_muscles">Pick muscles</string>
+    <string name="select_muscles">Select muscles to work on</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="select_muscles_title">Which muscles to work on?</string>
+    <string name="delete_alarm_dialog">Are you sure you want to delete this training?</string>
+    <string name="positive_answer">Yes</string>
+    <string name="negative_answer">No</string>
+</resources>
