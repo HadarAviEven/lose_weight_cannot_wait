@@ -68,30 +68,30 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
     }
 
     private void setTrainingName(TrainingViewHolder holder, Training currentItem) {
-        holder.name.setText(currentItem.getTrainingName());
+        holder.name.setText(currentItem.getName());
     }
 
     private void setTrainingDays(TrainingViewHolder holder, Training currentItem) {
-        if (currentItem.getTrainingDays().isEmpty()) return;
+        if (currentItem.getDays().isEmpty()) return;
 
         StringBuilder daysStringBuilder = new StringBuilder();
-        int indexOfLastItemInTheList = currentItem.getTrainingDays().size() - 1;
+        int indexOfLastItemInTheList = currentItem.getDays().size() - 1;
         for (int i = 0; i < indexOfLastItemInTheList; i++) {
-            daysStringBuilder.append(currentItem.getTrainingDays().get(i)).append(", ");
+            daysStringBuilder.append(currentItem.getDays().get(i)).append(", ");
         }
-        daysStringBuilder.append(currentItem.getTrainingDays().get(indexOfLastItemInTheList));
+        daysStringBuilder.append(currentItem.getDays().get(indexOfLastItemInTheList));
         holder.days.setText(daysStringBuilder.toString());
     }
 
     private void setTrainingMuscles(TrainingViewHolder holder, Training currentItem) {
-        if (currentItem.getTrainingMuscles().isEmpty()) return;
+        if (currentItem.getMuscles().isEmpty()) return;
 
         StringBuilder musclesStringBuilder = new StringBuilder();
-        int indexOfLastItemInTheList = currentItem.getTrainingMuscles().size() - 1;
+        int indexOfLastItemInTheList = currentItem.getMuscles().size() - 1;
         for (int i = 0; i < indexOfLastItemInTheList; i++) {
-            musclesStringBuilder.append(currentItem.getTrainingMuscles().get(i)).append(", ");
+            musclesStringBuilder.append(currentItem.getMuscles().get(i)).append(", ");
         }
-        musclesStringBuilder.append(currentItem.getTrainingMuscles().get(indexOfLastItemInTheList));
+        musclesStringBuilder.append(currentItem.getMuscles().get(indexOfLastItemInTheList));
         holder.muscles.setText(musclesStringBuilder.toString());
     }
 
@@ -145,7 +145,7 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
                 Log.e("deleteDataFromDB", "loadAllTrainings:");
                 final List<Training> trainingsList = mDb.trainingDao().loadAllTrainings();
                 for (int i = 0; i < trainingsList.size(); i++) {
-                    Log.e("MainActivity", "" + trainingsList.get(i).getTrainingName());
+                    Log.e("MainActivity", "" + trainingsList.get(i).getName());
                 }
             }
         });

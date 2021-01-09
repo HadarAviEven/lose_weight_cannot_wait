@@ -18,57 +18,57 @@ import androidx.room.TypeConverters;
 @Entity(tableName = "training")
 public class Training implements Parcelable {
     @PrimaryKey(autoGenerate = true)
-    private int trainingID;
+    private int id;
 
-    @ColumnInfo(name = "trainingname")
-    private String trainingName;
+    @ColumnInfo(name = "name")
+    private String name;
 
     @TypeConverters(DayEnumConverter.class)
-    private ArrayList<DayEnum> trainingDays;
+    private ArrayList<DayEnum> days;
 
     @TypeConverters(MuscleEnumConverter.class)
-    private ArrayList<MuscleEnum> trainingMuscles;
+    private ArrayList<MuscleEnum> muscles;
 
     public Training() {
 
     }
 
     public Training(String name, ArrayList<DayEnum> days, ArrayList<MuscleEnum> muscles) {
-        this.trainingName = name;
-        this.trainingDays = days;
-        this.trainingMuscles = muscles;
+        this.name = name;
+        this.days = days;
+        this.muscles = muscles;
     }
 
-    public String getTrainingName() {
-        return trainingName;
+    public int getId() {
+        return id;
     }
 
-    public ArrayList<DayEnum> getTrainingDays() {
-        return trainingDays;
+    public String getName() {
+        return name;
     }
 
-    public ArrayList<MuscleEnum> getTrainingMuscles() {
-        return trainingMuscles;
+    public ArrayList<DayEnum> getDays() {
+        return days;
     }
 
-    public int getTrainingID() {
-        return trainingID;
+    public ArrayList<MuscleEnum> getMuscles() {
+        return muscles;
     }
 
-    public void setTrainingName(String trainingName) {
-        this.trainingName = trainingName;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setTrainingDays(ArrayList<DayEnum> trainingDays) {
-        this.trainingDays = trainingDays;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setTrainingMuscles(ArrayList<MuscleEnum> trainingMuscles) {
-        this.trainingMuscles = trainingMuscles;
+    public void setDays(ArrayList<DayEnum> days) {
+        this.days = days;
     }
 
-    public void setTrainingID(int trainingID) {
-        this.trainingID = trainingID;
+    public void setMuscles(ArrayList<MuscleEnum> muscles) {
+        this.muscles = muscles;
     }
 
     @Override
@@ -78,19 +78,19 @@ public class Training implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.trainingID);
-        dest.writeString(this.trainingName);
-        dest.writeList(this.trainingDays);
-        dest.writeList(this.trainingMuscles);
+        dest.writeInt(this.id);
+        dest.writeString(this.name);
+        dest.writeList(this.days);
+        dest.writeList(this.muscles);
     }
 
     protected Training(Parcel in) {
-        this.trainingID = in.readInt();
-        this.trainingName = in.readString();
-        this.trainingDays = new ArrayList<DayEnum>();
-        in.readList(this.trainingDays, DayEnum.class.getClassLoader());
-        this.trainingMuscles = new ArrayList<MuscleEnum>();
-        in.readList(this.trainingMuscles, MuscleEnum.class.getClassLoader());
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.days = new ArrayList<>();
+        in.readList(this.days, DayEnum.class.getClassLoader());
+        this.muscles = new ArrayList<>();
+        in.readList(this.muscles, MuscleEnum.class.getClassLoader());
     }
 
     public static final Creator<Training> CREATOR = new Creator<Training>() {

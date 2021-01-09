@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("retrieveTasks", "loadAllTrainings:");
                 final List<Training> trainingsList = mDb.trainingDao().loadAllTrainings();
                 for (int i = 0; i < trainingsList.size(); i++) {
-                    Log.e("MainActivity", "" + trainingsList.get(i).getTrainingName());
+                    Log.e("MainActivity", "" + trainingsList.get(i).getName());
                 }
                 final ArrayList<Training> trainingsArrayList = new ArrayList<>(trainingsList);
 
@@ -126,12 +126,12 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 final long[] newId = new long[1];
                 newId[0] = mDb.trainingDao().insertTraining(training);
-                training.setTrainingID((int) newId[0]);
+                training.setId((int) newId[0]);
 
                 Log.e("insertDataToDB", "loadAllTrainings:");
                 final List<Training> trainingsList = mDb.trainingDao().loadAllTrainings();
                 for (int i = 0; i < trainingsList.size(); i++) {
-                    Log.e("MainActivity", "" + trainingsList.get(i).getTrainingName());
+                    Log.e("MainActivity", "" + trainingsList.get(i).getName());
                 }
             }
         });

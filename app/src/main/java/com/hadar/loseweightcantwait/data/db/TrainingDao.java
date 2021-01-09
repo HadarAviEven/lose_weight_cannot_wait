@@ -12,7 +12,7 @@ import androidx.room.Update;
 
 @Dao
 public interface TrainingDao {
-    @Query("SELECT * FROM training ORDER BY trainingID")
+    @Query("SELECT * FROM training ORDER BY id")
     List<Training> loadAllTrainings();
 
     @Insert
@@ -24,6 +24,6 @@ public interface TrainingDao {
     @Delete
     void deleteTraining(Training training);
 
-    @Query("SELECT * FROM training WHERE trainingID = :id")
+    @Query("SELECT * FROM training WHERE id = :id")
     Training loadTrainingById(int id);
 }
