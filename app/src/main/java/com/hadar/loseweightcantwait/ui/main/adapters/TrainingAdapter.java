@@ -1,35 +1,43 @@
 package com.hadar.loseweightcantwait.ui.main.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.hadar.loseweightcantwait.R;
 import com.hadar.loseweightcantwait.data.db.TrainingDatabase;
+import com.hadar.loseweightcantwait.utilities.listeners.OnStartDragListener;
 import com.hadar.loseweightcantwait.ui.addtraining.enums.EventType;
 import com.hadar.loseweightcantwait.ui.addtraining.models.Training;
 import com.hadar.loseweightcantwait.ui.main.events.TrainingEvent;
+import com.hadar.loseweightcantwait.utilities.ItemTouchHelperAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
+public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder>
+        implements ItemTouchHelperAdapter {
     private ArrayList<Training> trainingsArrayList;
     private Context context;
     private TrainingDatabase mDb;
+    private OnStartDragListener mDragStartListener;
 
-    public TrainingAdapter(Context context) {
+    public TrainingAdapter(Context context,
+                           OnStartDragListener dragListener) {
         this.context = context;
         mDb = TrainingDatabase.getDatabase(context);
+        mDragStartListener = dragListener;
     }
 
     public void setData(ArrayList<Training> newTrainingsArrayList) {
@@ -47,13 +55,20 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void updateTraining(Training training) {
+//        trainingsArrayList.remove(training);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public TrainingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.training_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.training_item, parent, false);
         return new TrainingViewHolder(view);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull final TrainingViewHolder holder, final int position) {
         Training currentItem = trainingsArrayList.get(position);
@@ -95,12 +110,23 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
         holder.muscles.setText(musclesStringBuilder.toString());
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setListener(final TrainingViewHolder holder, final int position) {
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                startDeleteAlarmDialog(position);
+                startDeleteTrainingDialog(position);
                 return true;
+            }
+        });
+
+        holder.handleViewButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    mDragStartListener.onStartDrag(holder);
+                }
+                return false;
             }
         });
     }
@@ -112,15 +138,16 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
         return trainingsArrayList.size();
     }
 
-    private void startDeleteAlarmDialog(final int position) {
+    private void startDeleteTrainingDialog(final int position) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setMessage(R.string.delete_alarm_dialog);
-        alertDialogBuilder.setPositiveButton(R.string.positive_answer, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                deleteData(trainingsArrayList.get(position));
-            }
-        });
+        alertDialogBuilder
+                .setPositiveButton(R.string.positive_answer, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        deleteData(trainingsArrayList.get(position));
+                    }
+                });
 
         alertDialogBuilder.setNegativeButton(R.string.negative_answer, null);
 
@@ -129,12 +156,15 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
     }
 
     private void deleteData(Training trainingToDelete) {
+        Log.e("trainingToDelete: ", " " + trainingToDelete.getName() + " id: " +
+                trainingToDelete.getId());
         deleteDataFromAdapter(trainingToDelete);
         deleteDataFromDB(trainingToDelete);
     }
 
     private void deleteDataFromAdapter(Training training) {
-        EventBus.getDefault().post(new TrainingEvent(new EventType(EventType.Type.DELETE), training));
+        EventBus.getDefault()
+                .post(new TrainingEvent(new EventType(EventType.Type.DELETE), training));
     }
 
     private void deleteDataFromDB(final Training training) {
@@ -142,11 +172,56 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
             @Override
             public void run() {
                 mDb.trainingDao().deleteTraining(training);
-                Log.e("deleteDataFromDB", "loadAllTrainings:");
-                final List<Training> trainingsList = mDb.trainingDao().loadAllTrainings();
-                for (int i = 0; i < trainingsList.size(); i++) {
-                    Log.e("MainActivity", "" + trainingsList.get(i).getName());
+            }
+        });
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        Log.e("TrainingAdapter", "onItemDismiss");
+//        removeTraining(trainingsArrayList.get(position));
+    }
+
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        if (fromPosition < trainingsArrayList.size() && toPosition < trainingsArrayList.size()) {
+            if (fromPosition < toPosition) {
+                for (int i = fromPosition; i < toPosition; i++) {
+                    updateMovement(i, 1);
                 }
+            } else {
+                for (int i = fromPosition; i > toPosition; i--) {
+                    updateMovement(i, -1);
+                }
+            }
+            notifyItemMoved(fromPosition, toPosition);
+        }
+    }
+
+    private void updateMovement(int i, int addOrSub) {
+        updateMovementInAdapter(i, addOrSub);
+        updateMovementInDB(i, addOrSub);
+    }
+
+    private void swapTrainingsId(int i, int addOrSub) {
+        int order1 = trainingsArrayList.get(i).getId();
+        int order2 = trainingsArrayList.get(i + addOrSub).getId();
+        trainingsArrayList.get(i).setId(order2);
+        trainingsArrayList.get(i + addOrSub).setId(order1);
+    }
+
+    private void updateMovementInAdapter(int i, int addOrSub) {
+        Collections.swap(trainingsArrayList, i, i + addOrSub);
+        swapTrainingsId(i, addOrSub);
+    }
+
+    private void updateMovementInDB(final int i, final int addOrSub) {
+        TrainingDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.trainingDao().updateTraining(trainingsArrayList.get(i));
+                mDb.trainingDao()
+                        .updateTraining(trainingsArrayList.get(i + addOrSub));
             }
         });
     }

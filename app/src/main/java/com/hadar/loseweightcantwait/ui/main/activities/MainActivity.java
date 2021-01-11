@@ -1,6 +1,7 @@
 package com.hadar.loseweightcantwait.ui.main.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.hadar.loseweightcantwait.utilities.EditItemTouchHelperCallback;
+import com.hadar.loseweightcantwait.utilities.listeners.OnStartDragListener;
 import com.hadar.loseweightcantwait.ui.main.EmptyRecyclerView;
 import com.hadar.loseweightcantwait.R;
 import com.hadar.loseweightcantwait.ui.main.adapters.TrainingAdapter;
@@ -27,12 +30,13 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnStartDragListener {
     private EmptyRecyclerView recyclerView;
     private TextView emptyView;
     private TrainingAdapter trainingAdapter;
     private final int LAUNCH_SECOND_ACTIVITY = 1;
     private TrainingDatabase mDb;
+    private ItemTouchHelper mItemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,24 +44,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         findViews();
-        initRecyclerView();
         initDB();
         retrieveTasks();
+        initRecyclerView();
+        initAdapter();
+        initItemTouchHelper();
     }
 
     private void findViews() {
         recyclerView = findViewById(R.id.recyclerView);
         emptyView = findViewById(R.id.emptyView);
-    }
-
-    private void initRecyclerView() {
-        recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        trainingAdapter = new TrainingAdapter(this);
-        recyclerView.setAdapter(trainingAdapter);
-        recyclerView.setEmptyView(emptyView);
-        recyclerView.initEmptyView();
     }
 
     private void initDB() {
@@ -71,7 +67,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("retrieveTasks", "loadAllTrainings:");
                 final List<Training> trainingsList = mDb.trainingDao().loadAllTrainings();
                 for (int i = 0; i < trainingsList.size(); i++) {
-                    Log.e("MainActivity", "" + trainingsList.get(i).getName());
+                    Log.e("MainActivity", "" + trainingsList.get(i).getName() + " id: " +
+                            trainingsList.get(i).getId());
                 }
                 final ArrayList<Training> trainingsArrayList = new ArrayList<>(trainingsList);
 
@@ -84,6 +81,36 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void initItemTouchHelper() {
+        ItemTouchHelper.Callback callback = new EditItemTouchHelperCallback(trainingAdapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(recyclerView);
+        recyclerView.setAdapter(trainingAdapter);
+    }
+
+    private void initRecyclerView() {
+//        recyclerView.setHasFixedSize(true);
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+//        recyclerView.setLayoutManager(layoutManager);
+//        trainingAdapter = new TrainingAdapter(this, this);
+//        recyclerView.setEmptyView(emptyView);
+//        recyclerView.initEmptyView();
+//        ItemTouchHelper.Callback callback = new EditItemTouchHelperCallback(trainingAdapter);
+//        mItemTouchHelper = new ItemTouchHelper(callback);
+//        mItemTouchHelper.attachToRecyclerView(recyclerView);
+//        recyclerView.setAdapter(trainingAdapter);
+
+        recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setEmptyView(emptyView);
+        recyclerView.initEmptyView();
+    }
+
+    private void initAdapter() {
+        trainingAdapter = new TrainingAdapter(this, this);
     }
 
     public void onClickAddTrainingButton(View view) {
@@ -101,7 +128,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == LAUNCH_SECOND_ACTIVITY) {
             if (resultCode == Activity.RESULT_OK) {
-                final Training resultTraining = data.getParcelableExtra(getString(R.string.result_training));
+                final Training resultTraining =
+                        data.getParcelableExtra(getString(R.string.result_training));
                 if (resultTraining != null) {
                     insertData(data);
                 }
@@ -117,7 +145,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void insertDataToAdapter(Training training) {
-        EventBus.getDefault().post(new TrainingEvent(new EventType(EventType.Type.INSERT), training));
+        EventBus.getDefault()
+                .post(new TrainingEvent(new EventType(EventType.Type.INSERT), training));
     }
 
     private void insertDataToDB(final Training training) {
@@ -128,10 +157,11 @@ public class MainActivity extends AppCompatActivity {
                 newId[0] = mDb.trainingDao().insertTraining(training);
                 training.setId((int) newId[0]);
 
-                Log.e("insertDataToDB", "loadAllTrainings:");
+                Log.e("afterInsertDataToDB", "loadAllTrainings:");
                 final List<Training> trainingsList = mDb.trainingDao().loadAllTrainings();
                 for (int i = 0; i < trainingsList.size(); i++) {
-                    Log.e("MainActivity", "" + trainingsList.get(i).getName());
+                    Log.e("MainActivity", "" + trainingsList.get(i).getName() + " id: " +
+                            trainingsList.get(i).getId());
                 }
             }
         });
@@ -147,6 +177,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "delete":
                 trainingAdapter.removeTraining(trainingEvent.getTraining());
+                break;
+            case "update":
+                trainingAdapter.updateTraining(trainingEvent.getTraining());
                 break;
             default:
                 break;
@@ -164,5 +197,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
     }
 }

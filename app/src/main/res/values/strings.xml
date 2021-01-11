@@ -21,4 +21,6 @@
     <string name="delete_alarm_dialog">Are you sure you want to delete this training?</string>
     <string name="positive_answer">Yes</string>
     <string name="negative_answer">No</string>
+    <string name="addition">+</string>
+    <string name="subtraction">-</string>
 </resources>
