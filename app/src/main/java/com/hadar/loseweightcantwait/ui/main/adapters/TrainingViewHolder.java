@@ -1,7 +1,8 @@
 package com.hadar.loseweightcantwait.ui.main.adapters;
 
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.hadar.loseweightcantwait.R;
@@ -15,12 +16,15 @@ public class TrainingViewHolder extends RecyclerView.ViewHolder
     protected TextView name;
     protected TextView days;
     protected TextView muscles;
-    protected Button handleViewButton;
+    protected ImageButton handleViewButton;
+    protected boolean handleButtonPressed;
+//    protected ImageView trashImageView;
 
     public TrainingViewHolder(@NonNull View itemView) {
         super(itemView);
 
         findViews();
+        handleButtonPressed = false;
     }
 
     private void findViews() {
@@ -28,15 +32,27 @@ public class TrainingViewHolder extends RecyclerView.ViewHolder
         days = itemView.findViewById(R.id.daysTextView);
         muscles = itemView.findViewById(R.id.musclesTextView);
         handleViewButton = itemView.findViewById(R.id.dragHandleButton);
+//        trashImageView = itemView.findViewById(R.id.trashImageView);
+    }
+
+    public void setHandleButtonPressed(boolean isPressed) {
+        handleButtonPressed = isPressed;
     }
 
     @Override
     public void onItemSelected() {
-        itemView.setBackgroundResource(R.drawable.card_view_pressed);
+        Log.e("TrainingViewHolder", "onItemSelected");
+        if (handleButtonPressed) {
+            itemView.setBackgroundResource(R.drawable.card_view_pressed);
+        }
     }
 
     @Override
     public void onItemClear() {
-        itemView.setBackgroundResource(R.drawable.card_view);
+        Log.e("TrainingViewHolder", "onItemClear");
+        if (handleButtonPressed) {
+            itemView.setBackgroundResource(R.drawable.card_view);
+            setHandleButtonPressed(false);
+        }
     }
 }

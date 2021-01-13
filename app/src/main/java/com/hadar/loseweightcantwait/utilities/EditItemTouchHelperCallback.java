@@ -1,5 +1,7 @@
 package com.hadar.loseweightcantwait.utilities;
 
+import android.util.Log;
+
 import com.hadar.loseweightcantwait.ui.main.adapters.TrainingAdapter;
 
 import androidx.annotation.NonNull;
@@ -20,7 +22,7 @@ public class EditItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public boolean isItemViewSwipeEnabled() {
-        return false;
+        return true;
     }
 
     @Override
@@ -35,18 +37,21 @@ public class EditItemTouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public boolean onMove(@NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
                           RecyclerView.ViewHolder target) {
+        Log.e("EditItemTouch", "onMove");
         mAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
         return true;
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        Log.e("EditItemTouch", "onSwiped");
         mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
     }
 
     @Override
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
+            Log.e("EditItemTouch", "onSelectedChanged");
             ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
             itemViewHolder.onItemSelected();
         }
@@ -58,10 +63,16 @@ public class EditItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public void clearView(@NonNull RecyclerView recyclerView,
                           @NonNull RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
+        Log.e("EditItemTouch", "clearView");
 
         ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
         itemViewHolder.onItemClear();
 
-        mAdapter.notifyDataSetChanged();
+        recyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }

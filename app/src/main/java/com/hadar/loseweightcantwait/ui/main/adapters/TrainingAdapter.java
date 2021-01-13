@@ -73,7 +73,7 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder>
     public void onBindViewHolder(@NonNull final TrainingViewHolder holder, final int position) {
         Training currentItem = trainingsArrayList.get(position);
         setTraining(holder, position, currentItem);
-        setListener(holder, position);
+        setListeners(holder, position);
     }
 
     private void setTraining(TrainingViewHolder holder, int position, Training currentItem) {
@@ -111,7 +111,7 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder>
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void setListener(final TrainingViewHolder holder, final int position) {
+    private void setListeners(final TrainingViewHolder holder, final int position) {
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -124,11 +124,20 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder>
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    holder.setHandleButtonPressed(true);
                     mDragStartListener.onStartDrag(holder);
                 }
                 return false;
             }
         });
+
+//        holder.trashImageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.e("TrainingAdapter", "onClick");
+//                deleteData(trainingsArrayList.get(position));
+//            }
+//        });
     }
 
     @Override
@@ -179,11 +188,12 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder>
     @Override
     public void onItemDismiss(int position) {
         Log.e("TrainingAdapter", "onItemDismiss");
-//        removeTraining(trainingsArrayList.get(position));
+        deleteData(trainingsArrayList.get(position));
     }
 
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
+        Log.e("TrainingAdapter", "onItemMove");
         if (fromPosition < trainingsArrayList.size() && toPosition < trainingsArrayList.size()) {
             if (fromPosition < toPosition) {
                 for (int i = fromPosition; i < toPosition; i++) {

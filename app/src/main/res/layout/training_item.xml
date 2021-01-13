@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="200dp"
     android:layout_margin="7dp"
     android:background="@drawable/card_view"
     android:orientation="horizontal">
+
+    <!--    <com.hadar.loseweightcantwait.utilities.SwipeLayout-->
+    <!--        android:id="@+id/test_swipe_swipe"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent">-->
+
+    <!--        <LinearLayout-->
+    <!--            android:layout_width="120dp"-->
+    <!--            android:layout_height="match_parent">-->
+
+    <!--            <ImageView-->
+    <!--                android:id="@+id/trashImageView"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="match_parent"-->
+    <!--                android:background="#FF3B30"-->
+    <!--                android:paddingLeft="25dp"-->
+    <!--                android:paddingRight="25dp"-->
+    <!--                android:src="@drawable/trash"-->
+    <!--                tools:ignore="ContentDescription" />-->
+    <!--        </LinearLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -71,15 +92,28 @@
             </LinearLayout>
         </LinearLayout>
 
-        <Button
+        <!--            <Button-->
+        <!--                android:id="@+id/dragHandleButtonn"-->
+        <!--                android:layout_width="0dp"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_gravity="center_vertical|end"-->
+        <!--                android:layout_margin="10dp"-->
+        <!--                android:layout_weight="1"-->
+        <!--                android:background="@drawable/drag_indicator"-->
+        <!--                android:scaleType="center" />-->
+
+        <ImageButton
             android:id="@+id/dragHandleButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="46dp"
             android:layout_gravity="center_vertical|end"
             android:layout_margin="10dp"
             android:layout_weight="1"
             android:background="@drawable/drag_indicator"
-            android:scaleType="center" />
+            android:scaleType="center"
+            tools:ignore="ContentDescription" />
 
     </LinearLayout>
+
+    <!--    </com.hadar.loseweightcantwait.utilities.SwipeLayout>-->
 </LinearLayout>
