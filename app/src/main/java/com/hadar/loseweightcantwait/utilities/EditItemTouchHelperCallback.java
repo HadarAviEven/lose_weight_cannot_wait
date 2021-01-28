@@ -38,14 +38,14 @@ public class EditItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public boolean onMove(@NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
                           RecyclerView.ViewHolder target) {
         Log.e("EditItemTouch", "onMove");
-        mAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+//        mAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
         return true;
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         Log.e("EditItemTouch", "onSwiped");
-        mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
+//        mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
     }
 
     @Override

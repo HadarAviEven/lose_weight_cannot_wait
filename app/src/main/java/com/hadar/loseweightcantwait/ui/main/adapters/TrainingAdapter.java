@@ -1,62 +1,31 @@
 package com.hadar.loseweightcantwait.ui.main.adapters;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.hadar.loseweightcantwait.R;
-import com.hadar.loseweightcantwait.data.db.TrainingDatabase;
-import com.hadar.loseweightcantwait.utilities.listeners.OnStartDragListener;
-import com.hadar.loseweightcantwait.ui.addtraining.enums.EventType;
 import com.hadar.loseweightcantwait.ui.addtraining.models.Training;
-import com.hadar.loseweightcantwait.ui.main.events.TrainingEvent;
-import com.hadar.loseweightcantwait.utilities.ItemTouchHelperAdapter;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder>
-        implements ItemTouchHelperAdapter {
+public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
     private ArrayList<Training> trainingsArrayList;
     private Context context;
-    private TrainingDatabase mDb;
-    private OnStartDragListener mDragStartListener;
+    public static ClickListener clickListener;
 
-    public TrainingAdapter(Context context,
-                           OnStartDragListener dragListener) {
+    public TrainingAdapter(Context context) {
         this.context = context;
-        mDb = TrainingDatabase.getDatabase(context);
-        mDragStartListener = dragListener;
     }
 
-    public void setData(ArrayList<Training> newTrainingsArrayList) {
-        this.trainingsArrayList = newTrainingsArrayList;
-        notifyDataSetChanged();
-    }
-
-    public void addTraining(Training training) {
-        trainingsArrayList.add(training);
-        notifyDataSetChanged();
-    }
-
-    public void removeTraining(Training training) {
-        trainingsArrayList.remove(training);
-        notifyDataSetChanged();
-    }
-
-    public void updateTraining(Training training) {
-//        trainingsArrayList.remove(training);
+    public void setData(List<Training> trainings) {
+        this.trainingsArrayList = new ArrayList<>(trainings);
         notifyDataSetChanged();
     }
 
@@ -72,11 +41,10 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder>
     @Override
     public void onBindViewHolder(@NonNull final TrainingViewHolder holder, final int position) {
         Training currentItem = trainingsArrayList.get(position);
-        setTraining(holder, position, currentItem);
-        setListeners(holder, position);
+        setTraining(holder, currentItem);
     }
 
-    private void setTraining(TrainingViewHolder holder, int position, Training currentItem) {
+    private void setTraining(TrainingViewHolder holder, Training currentItem) {
         setTrainingName(holder, currentItem);
         setTrainingDays(holder, currentItem);
         setTrainingMuscles(holder, currentItem);
@@ -110,36 +78,6 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder>
         holder.muscles.setText(musclesStringBuilder.toString());
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private void setListeners(final TrainingViewHolder holder, final int position) {
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                startDeleteTrainingDialog(position);
-                return true;
-            }
-        });
-
-        holder.handleViewButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                    holder.setHandleButtonPressed(true);
-                    mDragStartListener.onStartDrag(holder);
-                }
-                return false;
-            }
-        });
-
-//        holder.trashImageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.e("TrainingAdapter", "onClick");
-//                deleteData(trainingsArrayList.get(position));
-//            }
-//        });
-    }
-
     @Override
     public int getItemCount() {
         if (trainingsArrayList == null)
@@ -147,92 +85,44 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder>
         return trainingsArrayList.size();
     }
 
-    private void startDeleteTrainingDialog(final int position) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setMessage(R.string.delete_alarm_dialog);
-        alertDialogBuilder
-                .setPositiveButton(R.string.positive_answer, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        deleteData(trainingsArrayList.get(position));
-                    }
-                });
-
-        alertDialogBuilder.setNegativeButton(R.string.negative_answer, null);
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+    public Training getTrainingAtPosition(int position) {
+        return trainingsArrayList.get(position);
     }
 
-    private void deleteData(Training trainingToDelete) {
-        Log.e("trainingToDelete: ", " " + trainingToDelete.getName() + " id: " +
-                trainingToDelete.getId());
-        deleteDataFromAdapter(trainingToDelete);
-        deleteDataFromDB(trainingToDelete);
+    public void setOnItemClickListener(ClickListener clickListener) {
+        TrainingAdapter.clickListener = clickListener;
     }
 
-    private void deleteDataFromAdapter(Training training) {
-        EventBus.getDefault()
-                .post(new TrainingEvent(new EventType(EventType.Type.DELETE), training));
+    public interface ClickListener {
+        void onItemClick(View v, int position);
     }
 
-    private void deleteDataFromDB(final Training training) {
-        TrainingDatabase.databaseWriteExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                mDb.trainingDao().deleteTraining(training);
-            }
-        });
-    }
+//    private void updateMovement(int i, int addOrSub) {
+//        updateMovementInAdapter(i, addOrSub);
+//        updateMovementInDB(i, addOrSub);
+//    }
+//
+//    private void swapTrainingsId(int i, int addOrSub) {
+//        int order1 = trainingsArrayList.get(i).getId();
+//        int order2 = trainingsArrayList.get(i + addOrSub).getId();
+//        trainingsArrayList.get(i).setId(order2);
+//        trainingsArrayList.get(i + addOrSub).setId(order1);
+//    }
+//
+//    private void updateMovementInAdapter(int i, int addOrSub) {
+//        Collections.swap(trainingsArrayList, i, i + addOrSub);
+//        swapTrainingsId(i, addOrSub);
+//    }
+//
+//    private void updateMovementInDB(final int i, final int addOrSub) {
+//        TrainingDatabase.databaseWriteExecutor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                mDb.trainingDao().update(trainingsArrayList.get(i));
+//                mDb.trainingDao()
+//                        .update(trainingsArrayList.get(i + addOrSub));
+//            }
+//        });
 
-    @Override
-    public void onItemDismiss(int position) {
-        Log.e("TrainingAdapter", "onItemDismiss");
-        deleteData(trainingsArrayList.get(position));
-    }
-
-    @Override
-    public void onItemMove(int fromPosition, int toPosition) {
-        Log.e("TrainingAdapter", "onItemMove");
-        if (fromPosition < trainingsArrayList.size() && toPosition < trainingsArrayList.size()) {
-            if (fromPosition < toPosition) {
-                for (int i = fromPosition; i < toPosition; i++) {
-                    updateMovement(i, 1);
-                }
-            } else {
-                for (int i = fromPosition; i > toPosition; i--) {
-                    updateMovement(i, -1);
-                }
-            }
-            notifyItemMoved(fromPosition, toPosition);
-        }
-    }
-
-    private void updateMovement(int i, int addOrSub) {
-        updateMovementInAdapter(i, addOrSub);
-        updateMovementInDB(i, addOrSub);
-    }
-
-    private void swapTrainingsId(int i, int addOrSub) {
-        int order1 = trainingsArrayList.get(i).getId();
-        int order2 = trainingsArrayList.get(i + addOrSub).getId();
-        trainingsArrayList.get(i).setId(order2);
-        trainingsArrayList.get(i + addOrSub).setId(order1);
-    }
-
-    private void updateMovementInAdapter(int i, int addOrSub) {
-        Collections.swap(trainingsArrayList, i, i + addOrSub);
-        swapTrainingsId(i, addOrSub);
-    }
-
-    private void updateMovementInDB(final int i, final int addOrSub) {
-        TrainingDatabase.databaseWriteExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                mDb.trainingDao().updateTraining(trainingsArrayList.get(i));
-                mDb.trainingDao()
-                        .updateTraining(trainingsArrayList.get(i + addOrSub));
-            }
-        });
-    }
+//    }
 }

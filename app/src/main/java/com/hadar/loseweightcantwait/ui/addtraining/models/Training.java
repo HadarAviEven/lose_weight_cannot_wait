@@ -15,7 +15,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-@Entity(tableName = "training")
+@Entity(tableName = "training_table")
 public class Training implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -34,6 +34,13 @@ public class Training implements Parcelable {
     }
 
     public Training(String name, ArrayList<DayEnum> days, ArrayList<MuscleEnum> muscles) {
+        this.name = name;
+        this.days = days;
+        this.muscles = muscles;
+    }
+
+    public Training(int id, String name, ArrayList<DayEnum> days, ArrayList<MuscleEnum> muscles) {
+        this.id = id;
         this.name = name;
         this.days = days;
         this.muscles = muscles;

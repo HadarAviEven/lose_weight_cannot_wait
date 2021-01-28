@@ -23,4 +23,6 @@
     <string name="negative_answer">No</string>
     <string name="addition">+</string>
     <string name="subtraction">-</string>
+    <string name="training_for_update">trainingForUpdate</string>
+    <string name="training_id">trainingId</string>
 </resources>

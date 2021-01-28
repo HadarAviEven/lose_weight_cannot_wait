@@ -24,6 +24,15 @@ public class TrainingViewHolder extends RecyclerView.ViewHolder
         super(itemView);
 
         findViews();
+
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TrainingAdapter.clickListener.onItemClick(view, getAdapterPosition());
+            }
+        });
+
+
         handleButtonPressed = false;
     }
 

@@ -11,6 +11,7 @@ import com.hadar.loseweightcantwait.ui.addtraining.enums.DayEnum;
 import com.hadar.loseweightcantwait.ui.addtraining.models.Day;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -18,38 +19,45 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class DayAdapter extends RecyclerView.Adapter<DayViewHolder> {
     private Context context;
-    private ArrayList<DayEnum> daysEnumArrayList;
-    private ArrayList<Day> daysArrayList;
+    private ArrayList<Day> days;
 
-    public DayAdapter(Context context, ArrayList<DayEnum> days) {
+    public DayAdapter(Context context) {
         this.context = context;
-        this.daysEnumArrayList = days;
 
-        daysArrayList = new ArrayList<>();
-        for (DayEnum dayEnum : daysEnumArrayList) {
-            daysArrayList.add(new Day(dayEnum));
+        ArrayList<DayEnum> daysEnum = new ArrayList<>(Arrays.asList(DayEnum.values()));
+        days = new ArrayList<>();
+        for (DayEnum dayEnum : daysEnum) {
+            days.add(new Day(dayEnum));
         }
     }
 
     @NonNull
     @Override
     public DayViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.day_item, parent, false);
+        View view =
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.day_item, parent, false);
         return new DayViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final DayViewHolder holder, final int position) {
-        DayEnum currentItem = daysEnumArrayList.get(position);
-        holder.dayButton.setText(currentItem.toString());
+        Day currentItem = days.get(position);
+
+        setText(holder, currentItem);
+        setColor(holder, currentItem);
         setListener(holder, position);
     }
 
-    @Override
-    public int getItemCount() {
-        if (daysEnumArrayList == null)
-            return 0;
-        return daysEnumArrayList.size();
+    private void setText(DayViewHolder holder, Day currentItem) {
+        holder.dayButton.setText(currentItem.getDayEnum().toString());
+    }
+
+    private void setColor(DayViewHolder holder, Day currentItem) {
+        if (currentItem.isSelected()) {
+            dayButtonTurnOn(holder.dayButton);
+        } else {
+            dayButtonTurnOff(holder.dayButton);
+        }
     }
 
     private void setListener(DayViewHolder holder, final int position) {
@@ -58,21 +66,29 @@ public class DayAdapter extends RecyclerView.Adapter<DayViewHolder> {
             public void onClick(View v) {
                 Button dayButton = (Button) v;
 
-                if (!daysArrayList.get(position).isPressed()) {
-                    daysArrayList.get(position).setPressed(true);
+                if (!days.get(position).isSelected()) {
+                    days.get(position).setSelected(true);
                     dayButtonTurnOn(dayButton);
                 } else {
-                    daysArrayList.get(position).setPressed(false);
+                    days.get(position).setSelected(false);
                     dayButtonTurnOff(dayButton);
                 }
             }
         });
     }
 
+    @Override
+    public int getItemCount() {
+        if (days == null)
+            return 0;
+        return days.size();
+    }
+
     private void dayButtonTurnOn(Button dayButton) {
         dayButton.setTextColor(ContextCompat.getColor(context, R.color.white));
         dayButton.setBackgroundColor(ContextCompat.getColor(context, R.color.light_blue));
-        dayButton.setBackground(ContextCompat.getDrawable(context, R.drawable.selected_round_button));
+        dayButton.setBackground(
+                ContextCompat.getDrawable(context, R.drawable.selected_round_button));
     }
 
     private void dayButtonTurnOff(Button dayButton) {
@@ -81,13 +97,25 @@ public class DayAdapter extends RecyclerView.Adapter<DayViewHolder> {
         dayButton.setBackground(ContextCompat.getDrawable(context, R.drawable.round_button));
     }
 
-    public ArrayList<DayEnum> getSelectedDaysEnum() {
-        ArrayList<DayEnum> selectedDaysEnum = new ArrayList<>();
-        for (Day day : this.daysArrayList) {
-            if (day.isPressed()) {
-                selectedDaysEnum.add(day.getDayEnum());
+    public ArrayList<DayEnum> getSelectedDays() {
+        ArrayList<DayEnum> selectedDays = new ArrayList<>();
+        for (Day day : this.days) {
+            if (day.isSelected()) {
+                selectedDays.add(day.getDayEnum());
             }
         }
-        return selectedDaysEnum;
+        return selectedDays;
+    }
+
+    public void setSelectedDays(ArrayList<DayEnum> selectedDays) {
+        for (int i = 0; i < selectedDays.size(); i++) {
+            for (int j = i; j < days.size(); j++) {
+                if (selectedDays.get(i).equals(days.get(j).getDayEnum())) {
+                    days.get(j).setSelected(true);
+                    break;
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 }

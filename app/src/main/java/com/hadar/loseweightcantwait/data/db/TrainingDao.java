@@ -4,26 +4,31 @@ import com.hadar.loseweightcantwait.ui.addtraining.models.Training;
 
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
 @Dao
 public interface TrainingDao {
-    @Query("SELECT * FROM training ORDER BY id")
-    List<Training> loadAllTrainings();
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insert(Training training);
 
-    @Insert
-    long insertTraining(Training training);
+    @Query("DELETE FROM training_table")
+    void deleteAll();
 
-    @Update
-    void updateTraining(Training training);
+    @Query("SELECT * from training_table ORDER BY id")
+    LiveData<List<Training>> getAll();
+
+    @Query("SELECT * from training_table LIMIT 1")
+    Training[] getAny();
 
     @Delete
-    void deleteTraining(Training training);
+    void delete(Training training);
 
-    @Query("SELECT * FROM training WHERE id = :id")
-    Training loadTrainingById(int id);
+    @Update
+    void update(Training... training);
 }

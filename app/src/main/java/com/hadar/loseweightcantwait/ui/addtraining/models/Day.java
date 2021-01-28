@@ -4,26 +4,26 @@ import com.hadar.loseweightcantwait.ui.addtraining.enums.DayEnum;
 
 public class Day {
     private DayEnum dayEnum;
-    private boolean pressed;
+    private boolean selected;
 
     public Day(DayEnum dayEnum) {
         this.dayEnum = dayEnum;
-        this.pressed = false;
+        this.selected = false;
     }
 
     public DayEnum getDayEnum() {
         return dayEnum;
     }
 
-    public boolean isPressed() {
-        return pressed;
+    public boolean isSelected() {
+        return selected;
     }
 
     public void setDayEnum(DayEnum dayEnum) {
         this.dayEnum = dayEnum;
     }
 
-    public void setPressed(boolean pressed) {
-        this.pressed = pressed;
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }
