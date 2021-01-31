@@ -7,14 +7,14 @@
     <string name="add_new_training">Add New Training</string>
 
     <string name="save">Save</string>
-    <string name="select_days">Select days of training:</string>
-    <string name="enter_training_name">Enter training name:</string>
+    <string name="select_days">Days of training</string>
+    <string name="enter_training_name">Your training name</string>
     <string name="title_days">Days of Week:</string>
     <string name="title_muscles">Working On:</string>
     <string name="miss_name">Pick a name</string>
     <string name="miss_days">Pick days</string>
     <string name="miss_muscles">Pick muscles</string>
-    <string name="select_muscles">Select muscles to work on</string>
+    <string name="select_muscles">Muscles to work on</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
     <string name="select_muscles_title">Which muscles to work on?</string>

@@ -10,9 +10,10 @@
 
     <LinearLayout
         android:id="@+id/trainingNameLinearLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,18 +21,16 @@
 
         <TextView
             android:id="@+id/trainingNameTitle"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
             android:text="@string/enter_training_name"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:textStyle="italic" />
 
         <EditText
             android:id="@+id/trainingNameEditText"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:autofillHints=""
             android:ems="10"
             android:inputType="textPersonName"
@@ -42,8 +41,9 @@
         android:id="@+id/trainingDaysTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:text="@string/select_days"
-        android:textSize="24sp"
+        android:textSize="18sp"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,12 +54,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:padding="10dp"
         app:layout_constraintTop_toBottomOf="@+id/trainingDaysTitle"
         tools:layout_editor_absoluteX="8dp" />
 
     <Button
         android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onClickSaveButton"
         android:text="@string/save"
@@ -71,11 +72,10 @@
     <Button
         android:id="@+id/musclesSelectionButton"
         android:layout_width="0dp"
+        android:background="@color/light_blue"
         android:layout_height="wrap_content"
         android:onClick="onClickSelectMusclesButton"
         android:text="@string/select_muscles"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/daysRecyclerView" />
 

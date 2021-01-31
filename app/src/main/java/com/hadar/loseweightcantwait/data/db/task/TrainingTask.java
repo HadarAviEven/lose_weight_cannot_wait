@@ -1,47 +1,45 @@
-package com.hadar.loseweightcantwait;
+package com.hadar.loseweightcantwait.data.db.task;
 
 import com.hadar.loseweightcantwait.data.db.TrainingDao;
-import com.hadar.loseweightcantwait.ui.addtraining.enums.ActionEnum;
+import com.hadar.loseweightcantwait.data.db.enums.ActionEnum;
 import com.hadar.loseweightcantwait.ui.addtraining.models.Training;
 
-public class TrainingTask extends BaseTask {
+public class TrainingTask implements Runnable {
     private ActionEnum action;
-    private final TrainingDao mDao;
-    private Training mTraining;
+    private final TrainingDao dao;
+    private Training training;
 
     public TrainingTask(ActionEnum actionEnum, TrainingDao trainingDao) {
         this.action = actionEnum;
-        this.mDao = trainingDao;
+        this.dao = trainingDao;
     }
 
     public TrainingTask(ActionEnum actionEnum, TrainingDao trainingDao, Training training) {
         this.action = actionEnum;
-        this.mDao = trainingDao;
-        this.mTraining = training;
+        this.dao = trainingDao;
+        this.training = training;
     }
 
-    // like doInBackground()
     @Override
-    public Object call() {
+    public void run() {
         switch (this.action) {
             case Initialize:
-                mDao.getAll();
+                dao.getAll();
                 break;
             case Insert:
-                mDao.insert(this.mTraining);
+                dao.insert(this.training);
                 break;
             case Delete:
-                mDao.delete(this.mTraining);
+                dao.delete(this.training);
                 break;
             case DeleteAll:
-                mDao.deleteAll();
+                dao.deleteAll();
                 break;
             case Update:
-                mDao.update(this.mTraining);
+                dao.update(this.training);
                 break;
             default:
                 break;
         }
-        return null;
     }
 }

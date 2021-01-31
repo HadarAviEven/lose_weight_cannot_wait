@@ -2,9 +2,8 @@ package com.hadar.loseweightcantwait.data.db;
 
 import android.content.Context;
 
-import com.hadar.loseweightcantwait.NewAsyncTask;
-import com.hadar.loseweightcantwait.TrainingTask;
-import com.hadar.loseweightcantwait.ui.addtraining.enums.ActionEnum;
+import com.hadar.loseweightcantwait.data.db.task.TrainingTask;
+import com.hadar.loseweightcantwait.data.db.enums.ActionEnum;
 import com.hadar.loseweightcantwait.ui.addtraining.models.Training;
 
 import java.util.concurrent.ExecutorService;
@@ -44,8 +43,7 @@ public abstract class TrainingDatabase extends RoomDatabase {
                 @Override
                 public void onOpen(@NonNull SupportSQLiteDatabase db) {
                     super.onOpen(db);
-                    new NewAsyncTask()
-                            .executeAsync(new TrainingTask(ActionEnum.Initialize, INSTANCE.trainingDao()));
+                    new Thread(new TrainingTask(ActionEnum.Initialize, INSTANCE.trainingDao())).start();
                 }
             };
 }

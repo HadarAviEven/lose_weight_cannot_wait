@@ -20,6 +20,7 @@ import com.hadar.loseweightcantwait.ui.addtraining.enums.DayEnum;
 import com.hadar.loseweightcantwait.ui.addtraining.enums.MuscleEnum;
 import com.hadar.loseweightcantwait.R;
 import com.hadar.loseweightcantwait.ui.addtraining.models.Training;
+import com.hadar.loseweightcantwait.ui.main.viewmodel.DayViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +31,7 @@ public class AddTrainingActivity extends AppCompatActivity {
     private ArrayList<MuscleEnum> selectedMuscles;
     private RecyclerView daysRecyclerView;
     private DayAdapter dayAdapter;
+    private DayViewModel dayViewModel;
     private ArrayList<Muscle> muscles;
     private TextView selectedMusclesTextView;
     private Bundle extras;
@@ -41,8 +43,7 @@ public class AddTrainingActivity extends AppCompatActivity {
 
         setActivityTitle();
         findViews();
-        initDays();
-        initMuscles();
+        initViews();
         checkForUpdate();
     }
 
@@ -54,6 +55,11 @@ public class AddTrainingActivity extends AppCompatActivity {
         name = findViewById(R.id.trainingNameEditText);
         daysRecyclerView = findViewById(R.id.daysRecyclerView);
         selectedMusclesTextView = findViewById(R.id.selectedMusclesTextView);
+    }
+
+    private void initViews() {
+        initDays();
+        initMuscles();
     }
 
     private void initDays() {

@@ -15,8 +15,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.hadar.loseweightcantwait.TrainingViewModel;
-import com.hadar.loseweightcantwait.ui.main.EmptyRecyclerView;
+import com.hadar.loseweightcantwait.ui.main.viewmodel.TrainingViewModel;
+import com.hadar.loseweightcantwait.ui.main.recyclerview.EmptyRecyclerView;
 import com.hadar.loseweightcantwait.R;
 import com.hadar.loseweightcantwait.ui.main.adapters.TrainingAdapter;
 import com.hadar.loseweightcantwait.ui.addtraining.activities.AddTrainingActivity;

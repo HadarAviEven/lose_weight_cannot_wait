@@ -1,4 +1,4 @@
-package com.hadar.loseweightcantwait;
+package com.hadar.loseweightcantwait.ui.main.viewmodel;
 
 import android.app.Application;
 
@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.hadar.loseweightcantwait.ui.addtraining.models.Training;
+import com.hadar.loseweightcantwait.ui.main.repository.TrainingRepository;
 
 public class TrainingViewModel extends AndroidViewModel {
     private TrainingRepository trainingRepository;

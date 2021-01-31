@@ -1,4 +1,4 @@
-package com.hadar.loseweightcantwait.ui.main;
+package com.hadar.loseweightcantwait.ui.main.recyclerview;
 
 import android.content.Context;
 import android.util.AttributeSet;
