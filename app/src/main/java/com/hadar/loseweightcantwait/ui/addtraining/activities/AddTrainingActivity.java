@@ -1,13 +1,13 @@
 package com.hadar.loseweightcantwait.ui.addtraining.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -20,7 +20,7 @@ import com.hadar.loseweightcantwait.ui.addtraining.enums.DayEnum;
 import com.hadar.loseweightcantwait.ui.addtraining.enums.MuscleEnum;
 import com.hadar.loseweightcantwait.R;
 import com.hadar.loseweightcantwait.ui.addtraining.models.Training;
-import com.hadar.loseweightcantwait.ui.main.viewmodel.DayViewModel;
+import com.hadar.loseweightcantwait.ui.addtraining.viewmodels.AddTrainingViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,10 +31,9 @@ public class AddTrainingActivity extends AppCompatActivity {
     private ArrayList<MuscleEnum> selectedMuscles;
     private RecyclerView daysRecyclerView;
     private DayAdapter dayAdapter;
-    private DayViewModel dayViewModel;
     private ArrayList<Muscle> muscles;
     private TextView selectedMusclesTextView;
-    private Bundle extras;
+    private AddTrainingViewModel addTrainingViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +43,7 @@ public class AddTrainingActivity extends AppCompatActivity {
         setActivityTitle();
         findViews();
         initViews();
+        initTrainingViewModel();
         checkForUpdate();
     }
 
@@ -87,18 +87,43 @@ public class AddTrainingActivity extends AppCompatActivity {
         }
     }
 
-    private void checkForUpdate() {
-        extras = getIntent().getExtras();
-        if (extras != null) {
-            Training trainingForUpdate =
-                    getIntent().getParcelableExtra(getString(R.string.training_for_update));
-            if (trainingForUpdate != null) {
-                setData(trainingForUpdate);
-            }
-        }
+    private void initTrainingViewModel() {
+        addTrainingViewModel = ViewModelProviders.of(this).get(AddTrainingViewModel.class);
+
+        observe();
     }
 
-    private void setData(Training training) {
+    private void observe() {
+        addTrainingViewModel.currUpdatingTrainingLiveData.observe(this, new Observer<Training>() {
+            @Override
+            public void onChanged(Training training) {
+                setCurrTraining(training);
+            }
+        });
+
+        addTrainingViewModel.exitAddTrainingScreenLiveEvent.observe(this, new Observer<Void>() {
+            @Override
+            public void onChanged(Void aVoid) {
+                exitActivity();
+            }
+        });
+    }
+
+    private void exitActivity() {
+        finish();
+    }
+
+    private void checkForUpdate() {
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) return;
+
+        int id = extras.getInt(getString(R.string.training_id), -1);
+        if (id == -1) return;
+
+        addTrainingViewModel.initTrainingId(id);
+    }
+
+    private void setCurrTraining(Training training) {
         setName(training);
         setDays(training);
         setMuscles(training);
@@ -167,7 +192,7 @@ public class AddTrainingActivity extends AppCompatActivity {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int index) {
-                updatePositive(checked);
+                exitDialogByOk(checked);
                 setMusclesTextView();
             }
         });
@@ -175,7 +200,7 @@ public class AddTrainingActivity extends AppCompatActivity {
         builder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int index) {
-                updateNegative(checked);
+                exitDialogByCancel(checked);
             }
         });
 
@@ -183,13 +208,13 @@ public class AddTrainingActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void updatePositive(boolean[] checked) {
+    private void exitDialogByOk(boolean[] checked) {
         for (int i = 0; i < muscles.size(); i++) {
             muscles.get(i).setSelected(checked[i]);
         }
     }
 
-    private void updateNegative(boolean[] checked) {
+    private void exitDialogByCancel(boolean[] checked) {
         for (int i = 0; i < muscles.size(); i++) {
             checked[i] = muscles.get(i).isSelected();
         }
@@ -200,21 +225,8 @@ public class AddTrainingActivity extends AppCompatActivity {
 
         String trainingName = name.getText().toString();
         Training training = new Training(trainingName, selectedDays, selectedMuscles);
-        returnIntent(training);
-    }
 
-    private void getSelectedDaysList() {
-        selectedDays = dayAdapter.getSelectedDays();
-    }
-
-    private void getSelectedMusclesList() {
-        selectedMuscles = new ArrayList<>();
-
-        for (Muscle muscle : muscles) {
-            if (muscle.isSelected()) {
-                selectedMuscles.add(muscle.getMuscleEnum());
-            }
-        }
+        addTrainingViewModel.onSaveTrainingButtonClicked(training);
     }
 
     private boolean allFieldsCompleted() {
@@ -251,19 +263,17 @@ public class AddTrainingActivity extends AppCompatActivity {
         return !selectedMuscles.isEmpty();
     }
 
-    private void returnIntent(Training newTraining) {
-        Intent returnIntent = new Intent();
+    private void getSelectedDaysList() {
+        selectedDays = dayAdapter.getSelectedDays();
+    }
 
-        if (extras != null && extras.containsKey(getString(R.string.training_id))) {
-            returnIntent.putExtra(getString(R.string.training_for_update), newTraining);
-            int id = extras.getInt(getString(R.string.training_id), -1);
-            if (id != -1) {
-                returnIntent.putExtra(getString(R.string.training_id), id);
+    private void getSelectedMusclesList() {
+        selectedMuscles = new ArrayList<>();
+
+        for (Muscle muscle : muscles) {
+            if (muscle.isSelected()) {
+                selectedMuscles.add(muscle.getMuscleEnum());
             }
-        } else {
-            returnIntent.putExtra(getString(R.string.result_training), newTraining);
         }
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
     }
 }

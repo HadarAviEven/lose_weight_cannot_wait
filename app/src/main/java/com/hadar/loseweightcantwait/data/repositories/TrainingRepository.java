@@ -1,4 +1,4 @@
-package com.hadar.loseweightcantwait.ui.main.repository;
+package com.hadar.loseweightcantwait.data.repositories;
 
 import android.app.Application;
 
@@ -6,7 +6,7 @@ import java.util.List;
 
 import androidx.lifecycle.LiveData;
 
-import com.hadar.loseweightcantwait.data.db.task.TrainingTask;
+import com.hadar.loseweightcantwait.data.db.tasks.TrainingTask;
 import com.hadar.loseweightcantwait.data.db.TrainingDao;
 import com.hadar.loseweightcantwait.data.db.TrainingDatabase;
 import com.hadar.loseweightcantwait.data.db.enums.ActionEnum;
@@ -40,5 +40,9 @@ public class TrainingRepository {
 
     public void update(Training training) {
         new Thread(new TrainingTask(ActionEnum.Update, trainingDao, training)).start();
+    }
+
+    public Training getTrainingById(int trainingId) {
+        return trainingDao.getTrainingById(trainingId);
     }
 }

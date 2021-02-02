@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
     private ArrayList<Training> trainingsArrayList;
     private Context context;
-    public static ClickListener clickListener;
+    public ClickListener clickListener;
 
     public TrainingAdapter(Context context) {
         this.context = context;
@@ -41,7 +41,9 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final TrainingViewHolder holder, final int position) {
         Training currentItem = trainingsArrayList.get(position);
+
         setTraining(holder, currentItem);
+        setListener(holder, currentItem);
     }
 
     private void setTraining(TrainingViewHolder holder, Training currentItem) {
@@ -78,6 +80,15 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
         holder.muscles.setText(musclesStringBuilder.toString());
     }
 
+    private void setListener(TrainingViewHolder holder, final Training currentItem) {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.onItemClick(currentItem);
+            }
+        });
+    }
+
     @Override
     public int getItemCount() {
         if (trainingsArrayList == null)
@@ -90,39 +101,10 @@ public class TrainingAdapter extends RecyclerView.Adapter<TrainingViewHolder> {
     }
 
     public void setOnItemClickListener(ClickListener clickListener) {
-        TrainingAdapter.clickListener = clickListener;
+        this.clickListener = clickListener;
     }
 
     public interface ClickListener {
-        void onItemClick(View v, int position);
+        void onItemClick(Training training);
     }
-
-//    private void updateMovement(int i, int addOrSub) {
-//        updateMovementInAdapter(i, addOrSub);
-//        updateMovementInDB(i, addOrSub);
-//    }
-//
-//    private void swapTrainingsId(int i, int addOrSub) {
-//        int order1 = trainingsArrayList.get(i).getId();
-//        int order2 = trainingsArrayList.get(i + addOrSub).getId();
-//        trainingsArrayList.get(i).setId(order2);
-//        trainingsArrayList.get(i + addOrSub).setId(order1);
-//    }
-//
-//    private void updateMovementInAdapter(int i, int addOrSub) {
-//        Collections.swap(trainingsArrayList, i, i + addOrSub);
-//        swapTrainingsId(i, addOrSub);
-//    }
-//
-//    private void updateMovementInDB(final int i, final int addOrSub) {
-//        TrainingDatabase.databaseWriteExecutor.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                mDb.trainingDao().update(trainingsArrayList.get(i));
-//                mDb.trainingDao()
-//                        .update(trainingsArrayList.get(i + addOrSub));
-//            }
-//        });
-
-//    }
 }

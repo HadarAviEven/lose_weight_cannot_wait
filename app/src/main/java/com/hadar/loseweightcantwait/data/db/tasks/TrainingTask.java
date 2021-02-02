@@ -1,4 +1,4 @@
-package com.hadar.loseweightcantwait.data.db.task;
+package com.hadar.loseweightcantwait.data.db.tasks;
 
 import com.hadar.loseweightcantwait.data.db.TrainingDao;
 import com.hadar.loseweightcantwait.data.db.enums.ActionEnum;

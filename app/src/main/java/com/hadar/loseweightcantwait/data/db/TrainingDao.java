@@ -31,4 +31,7 @@ public interface TrainingDao {
 
     @Update
     void update(Training... training);
+
+    @Query("SELECT * FROM training_table WHERE id = :id")
+    Training getTrainingById(int id);
 }
