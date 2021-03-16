@@ -1,7 +1,5 @@
 package com.hadar.loseweightcantwait.ui.addtraining.fragments;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,19 +16,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hadar.loseweightcantwait.R;
 import com.hadar.loseweightcantwait.ui.addtraining.enums.DayEnum;
 import com.hadar.loseweightcantwait.ui.addtraining.enums.MuscleEnum;
-import com.hadar.loseweightcantwait.ui.addtraining.models.Muscle;
 import com.hadar.loseweightcantwait.ui.addtraining.models.Training;
 import com.hadar.loseweightcantwait.ui.addtraining.viewmodels.AddTrainingViewModel;
 import com.hadar.loseweightcantwait.ui.main.adapters.DayAdapter;
+import com.hadar.loseweightcantwait.ui.main.adapters.MuscleAdapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class AddTrainingFragment extends Fragment {
     private EditText name;
@@ -37,11 +34,11 @@ public class AddTrainingFragment extends Fragment {
     private ArrayList<MuscleEnum> selectedMuscles;
     private RecyclerView daysRecyclerView;
     private DayAdapter dayAdapter;
-    private ArrayList<Muscle> muscles;
-    private TextView selectedMusclesTextView;
+    private RecyclerView musclesRecyclerView;
+    private MuscleAdapter muscleAdapter;
     private AddTrainingViewModel addTrainingViewModel;
-    private Button musclesSelectionButton;
     private Button saveButton;
+    private boolean isUpdateTraining;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,28 +50,22 @@ public class AddTrainingFragment extends Fragment {
     public void onViewCreated(@NonNull final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setTitle();
         findViews(view);
         setOnClickButtons();
         initViews();
         initTrainingViewModel();
-        checkForUpdate();
-    }
-
-    private void setTitle() {
-        this.requireActivity().setTitle(getString(R.string.add_new_training));
+        isUpdateTraining = checkForUpdate();
+        setTitle();
     }
 
     private void findViews(View view) {
         name = view.findViewById(R.id.trainingNameEditText);
         daysRecyclerView = view.findViewById(R.id.daysRecyclerView);
-        selectedMusclesTextView = view.findViewById(R.id.selectedMusclesTextView);
-        musclesSelectionButton = view.findViewById(R.id.musclesSelectionButton);
+        musclesRecyclerView = view.findViewById(R.id.musclesRecyclerView);
         saveButton = view.findViewById(R.id.saveButton);
     }
 
     private void setOnClickButtons() {
-        setOnClickMusclesSelectionButton();
         setOnClickSaveButton();
     }
 
@@ -90,68 +81,6 @@ public class AddTrainingFragment extends Fragment {
                 addTrainingViewModel.onSaveTrainingButtonClicked(training);
             }
         });
-    }
-
-    private void setOnClickMusclesSelectionButton() {
-        musclesSelectionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createMusclesAlertDialog();
-            }
-        });
-    }
-
-    private void createMusclesAlertDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-
-        String[] options = new String[muscles.size()];
-        final boolean[] checked = new boolean[muscles.size()];
-
-        for (int i = 0; i < muscles.size(); i++) {
-            options[i] = muscles.get(i).getMuscleEnum().name();
-            checked[i] = muscles.get(i).isSelected();
-        }
-
-        builder.setMultiChoiceItems(options, checked,
-                new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int i, boolean isChecked) {
-                        checked[i] = isChecked;
-                    }
-                });
-
-        builder.setCancelable(false);
-        builder.setTitle(R.string.select_muscles_title);
-
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int index) {
-                exitDialogByOk(checked);
-                setMusclesTextView();
-            }
-        });
-
-        builder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int index) {
-                exitDialogByCancel(checked);
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private void exitDialogByOk(boolean[] checked) {
-        for (int i = 0; i < muscles.size(); i++) {
-            muscles.get(i).setSelected(checked[i]);
-        }
-    }
-
-    private void exitDialogByCancel(boolean[] checked) {
-        for (int i = 0; i < muscles.size(); i++) {
-            checked[i] = muscles.get(i).isSelected();
-        }
     }
 
     private void initViews() {
@@ -177,11 +106,18 @@ public class AddTrainingFragment extends Fragment {
     }
 
     private void initMuscles() {
-        ArrayList<MuscleEnum> musclesEnum = new ArrayList<>(Arrays.asList(MuscleEnum.values()));
-        muscles = new ArrayList<>();
-        for (MuscleEnum muscleEnum : musclesEnum) {
-            muscles.add(new Muscle(muscleEnum));
-        }
+        initMuscleRecyclerView();
+        initMuscleAdapter();
+    }
+
+    private void initMuscleRecyclerView() {
+        musclesRecyclerView.setHasFixedSize(true);
+        musclesRecyclerView.setLayoutManager(new GridLayoutManager(this.getActivity(), 4));
+    }
+
+    private void initMuscleAdapter() {
+        muscleAdapter = new MuscleAdapter(this.getActivity());
+        musclesRecyclerView.setAdapter(muscleAdapter);
     }
 
     private void initTrainingViewModel() {
@@ -211,14 +147,23 @@ public class AddTrainingFragment extends Fragment {
         Navigation.findNavController(requireView()).popBackStack();
     }
 
-    private void checkForUpdate() {
+    private boolean checkForUpdate() {
         Bundle bundle = this.getArguments();
-        if (bundle == null) return;
+        if (bundle == null) return false;
 
         int id = bundle.getInt(getString(R.string.training_id), -1);
-        if (id == -1) return;
+        if (id == -1) return false;
 
         addTrainingViewModel.initTrainingId(id);
+        return true;
+    }
+
+    private void setTitle() {
+        if (isUpdateTraining) {
+            this.requireActivity().setTitle(getString(R.string.edit_training));
+        } else {
+            this.requireActivity().setTitle(getString(R.string.add_new_training));
+        }
     }
 
     private void setCurrTraining(Training training) {
@@ -238,31 +183,7 @@ public class AddTrainingFragment extends Fragment {
     }
 
     private void setMuscles(Training training) {
-        setMusclesArray(training);
-        setMusclesTextView();
-    }
-
-    private void setMusclesArray(Training training) {
-        selectedMuscles = training.getMuscles();
-        for (int i = 0; i < selectedMuscles.size(); i++) {
-            for (int j = i; j < muscles.size(); j++) {
-                if (selectedMuscles.get(i).equals(muscles.get(j).getMuscleEnum())) {
-                    muscles.get(j).setSelected(true);
-                    break;
-                }
-            }
-        }
-    }
-
-    private void setMusclesTextView() {
-        StringBuilder textStringBuilder = new StringBuilder();
-
-        for (Muscle muscle : muscles) {
-            if (muscle.isSelected()) {
-                textStringBuilder.append(muscle.getMuscleEnum()).append("\n");
-            }
-        }
-        selectedMusclesTextView.setText(textStringBuilder.toString());
+        muscleAdapter.setSelectedMuscles(training.getMuscles());
     }
 
     private boolean allFieldsCompleted() {
@@ -281,8 +202,8 @@ public class AddTrainingFragment extends Fragment {
         return true;
     }
 
-    private void makeToast(int whatIsMiss) {
-        Toast.makeText(this.getActivity(), getString(whatIsMiss), Toast.LENGTH_SHORT).show();
+    private void makeToast(int stringId) {
+        Toast.makeText(this.getActivity(), getString(stringId), Toast.LENGTH_SHORT).show();
     }
 
     private boolean nameCompleted() {
@@ -304,12 +225,6 @@ public class AddTrainingFragment extends Fragment {
     }
 
     private void getSelectedMusclesList() {
-        selectedMuscles = new ArrayList<>();
-
-        for (Muscle muscle : muscles) {
-            if (muscle.isSelected()) {
-                selectedMuscles.add(muscle.getMuscleEnum());
-            }
-        }
+        selectedMuscles = muscleAdapter.getSelectedMuscles();
     }
 }
